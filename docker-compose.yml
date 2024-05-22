@@ -1,0 +1,8 @@
+version: '3.8'
+
+services:
+  image-processor:
+    build: .
+    volumes:
+      - .:/app
+    command: python recognize-clothe-and-color.py https://regognize-clothes-model.s3.eu-west-1.amazonaws.com/input_img.jpg C:\Users\97250\Documents\myCloset_ML\output_image.jpg

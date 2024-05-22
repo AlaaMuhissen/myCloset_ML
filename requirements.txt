@@ -1,0 +1,10 @@
+ultralytics
+rembg
+easygui
+pillow
+opencv-python-headless
+numpy
+pandas
+colorthief
+matplotlib
+requests
