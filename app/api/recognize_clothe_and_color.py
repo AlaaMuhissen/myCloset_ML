@@ -9,13 +9,18 @@ import pandas as pd
 from colorthief import ColorThief
 import cloudinary.uploader
 import uuid
-from config import cloudinary
+from config.cloudinaryConfig import cloudinary
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
+YOLO_model = os.getenv('MODEL_URI')
+Color_cvs = os.getenv('COLOR_URI')
 # Load the YOLO model once
-model = YOLO('https://regognize-clothes-model.s3.eu-west-1.amazonaws.com/regognizeClothesModel.pt')
+model = YOLO(YOLO_model)
 
 # Read the colors CSV file once
-csv_path = 'https://regognize-clothes-model.s3.eu-west-1.amazonaws.com/colors.csv'
+csv_path = Color_cvs
 index = ['color', 'color_name', 'hex', 'R', 'G', 'B']
 color_df = pd.read_csv(csv_path, names=index, header=None)
 

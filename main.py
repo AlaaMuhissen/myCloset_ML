@@ -4,9 +4,8 @@ from fastapi import FastAPI, HTTPException, File, UploadFile
 from fastapi.responses import JSONResponse
 from io import BytesIO
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from recognize_clothe_and_color import process_and_annotate_image  
+from app.api.recognize_clothe_and_color import process_and_annotate_image  
 
 app = FastAPI()
 
