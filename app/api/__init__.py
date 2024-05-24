@@ -1,0 +1,1 @@
+from .recognize_clothe_and_color import process_and_annotate_image
