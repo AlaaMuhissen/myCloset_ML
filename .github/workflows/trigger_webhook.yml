@@ -3,7 +3,7 @@ name: Trigger Webhook on Prod Push
 on:
   push:
     branches:
-      - prod
+      - production
 
 jobs:
   docker:
