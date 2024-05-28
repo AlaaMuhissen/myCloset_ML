@@ -23,7 +23,3 @@ jobs:
           else
             echo "Webhook call succeeded with status $response"
           fi
-
-      - name: Stop containers
-        if: always()
-        run: docker-compose -f "docker-compose.yml" down
