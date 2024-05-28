@@ -1,8 +1,13 @@
-version: '3.8'
+version: '3.9'
 
 services:
-  image-processor:
-    build: .
+  web:
+    image: alaamuhissen/recognize_clothes_and_colors_api:latest
+    container_name: recognize_clothes_and_colors_api_container
+    env_file:
+      - .env
     volumes:
       - .:/app
-    command: python recognize-clothe-and-color.py https://regognize-clothes-model.s3.eu-west-1.amazonaws.com/input_img.jpg C:\Users\97250\Documents\myCloset_ML\output_image.jpg
+    ports:
+      - "8180:8000"
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload

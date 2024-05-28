@@ -1,10 +1,10 @@
-ultralytics
-rembg
-easygui
+fastapi
+uvicorn
 pillow
-opencv-python-headless
+rembg
+ultralytics
+requests
 numpy
 pandas
 colorthief
-matplotlib
-requests
+cloudinary

@@ -3,7 +3,7 @@ import requests
 
 url = "http://127.0.0.1:8000/recognize-clothes-and-colors/"
 
-
+# Get the base directory of the project
 base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 file_path = os.path.join(base_dir, 'data', 'sample_images', 'watch.jpeg')
 
