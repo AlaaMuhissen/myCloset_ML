@@ -61,10 +61,11 @@ def extract_color_palette(image):
     hex_colors = ['#%02x%02x%02x' % color for color in palette]
     return hex_colors
 
-def process_and_annotate_image(input_image_bytes):
-    input_image = Image.open(BytesIO(input_image_bytes))
+def process_and_annotate_image(image_url):
+    response = requests.get(image_url)
+    input_image = Image.open(BytesIO(response.content))
     image_no_bg, label = process_image(input_image)
-    color_palette = extract_color_palette(BytesIO(input_image_bytes))
+    color_palette = extract_color_palette(BytesIO(response.content))
     
     # Convert the image to a format suitable for upload
     buffer = BytesIO()

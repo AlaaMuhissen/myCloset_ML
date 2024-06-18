@@ -1,19 +1,23 @@
-import os
 import requests
 
+# URL of the FastAPI endpoint
 url = "http://127.0.0.1:8000/recognize-clothes-and-colors/"
 
-# Get the base directory of the project
-base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-file_path = os.path.join(base_dir, 'data', 'sample_images', 'watch.jpeg')
+# URL of the image to be tested
+image_url = 'https://firebasestorage.googleapis.com/v0/b/mycloset-c256e.appspot.com/o/Clothes%2FIMG_0850.jpeg?alt=media&token=ca2e2ecd-e7e4-4738-b1c8-57dceaab8f95' # Replace with an actual image URL
 
-with open(file_path, "rb") as f:
-    files = {"file": ("watch.jpeg", f)}
-    response = requests.post(url, files=files)
+# Prepare the data to be sent in the POST request
+data = {
+    "image_url": image_url
+}
 
+# Send the POST request with the image URL
+response = requests.post(url, data=data)
+
+# Check the response
 if response.status_code == 200:
-    with open("output_image.jpg", "wb") as out:
-        out.write(response.content)
-    print("Processed image saved as output_image.jpg")
+    print("Image processed successfully:")
+    print(response.json())
 else:
-    print(f"Failed to process image: {response.status_code}")
+    # Print the error message
+    print(f"Failed to process image: {response.status_code}, {response.text}")
