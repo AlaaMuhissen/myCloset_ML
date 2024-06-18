@@ -29,7 +29,8 @@ async def recognize_clothes_and_colors(image_url: str = Form(...)):
 
 @app.get("/")
 def sayHello():
-    print("hello world")
+    logging.info("Hello world")
+    return {"message": "Hello world"}
 
 
 if __name__ == "__main__":

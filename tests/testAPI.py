@@ -1,7 +1,7 @@
 import requests
 
 # URL of the FastAPI endpoint
-url = "https://mycloset.jce.ac/recognize-clothes-and-colors/"
+url = "http://127.0.0.1:8000/"
 
 # URL of the image to be tested
 image_url = 'https://res.cloudinary.com/depgto6ws/image/upload/v1718708768/ppbyspzdmeecgrq8k18l.jpg' # Replace with an actual image URL
@@ -12,7 +12,7 @@ data = {
 }
 
 # Send the POST request with the image URL
-response = requests.post(url, data=data)
+response = requests.get(url)
 
 # Check the response
 if response.status_code == 200:
