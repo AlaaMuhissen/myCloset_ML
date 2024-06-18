@@ -6,17 +6,17 @@ on:
       - production
 
 jobs:
-  docker:
+  push_to_prod:
     timeout-minutes: 10
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
 
       - name: Send webhook to server
         run: |
-          response=$(curl -s -o /dev/null -w "%{http_code}" -X POST https://github.jce.ac/webhook/8de4b659-3610-4399-af65-b8ecf1700a08/ -H "Content-Type: application/json" -d '{"ref": "refs/heads/prod"}')
+          response=$(curl -s -o /dev/null -w "%{http_code}" -X POST "https://github.jce.ac/webhook/8de4b659-3610-4399-af65-b8ecf1700a08")
           if [ $response -ne 200 ]; then
             echo "Webhook call failed with status $response"
             exit 1
