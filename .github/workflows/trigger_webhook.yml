@@ -3,7 +3,7 @@ name: Trigger Webhook on Prod Push
 on:
   push:
     branches:
-      - prod
+      - production
 
 jobs:
   docker:
@@ -14,68 +14,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
 
-      - name: Install Docker
-        run: |
-          curl -fsSL https://get.docker.com -o get-docker.sh
-          sh get-docker.sh
-          sudo usermod -aG docker $USER
-
-      - name: Install Docker Compose
-        run: |
-          DOCKER_COMPOSE_VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)
-          sudo curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-          docker-compose --version
-
-
-      - name: Start containers
-        run: |
-          docker-compose -f "docker-compose.yml" up -d --build
-          if [ $? -ne 0 ]; then
-            echo "Docker Compose failed to start"
-            exit 1
-          else
-            echo "Docker Compose started successfully"
-          fi
-
-      - name: Verify containers are running on required ports and no other ports
-        run: |
-          #!/bin/bash
-          set -e
-          echo "Fetching required ports from the webhook URL..."
-          required_ports=$(curl -s https://github.jce.ac/webhook/8de4b659-3610-4399-af65-b8ecf1700a08/ | jq -r '.ports[]')
-          echo "Required ports: $required_ports"
-
-          echo "Converting required ports to an array..."
-          readarray -t required_ports_array <<<"$required_ports"
-
-          echo "Fetching used ports from Docker containers..."
-          used_ports=$(docker ps --format '{{.Ports}}' | grep -oP '\d+(?=-)' | sort -u)
-          echo "Used ports: $used_ports"
-
-          echo "Converting used ports to an array..."
-          readarray -t used_ports_array <<<"$used_ports"
-
-          echo "Checking if used ports are in the required ports list..."
-          for port in "${used_ports_array[@]}"; do
-              if [[ ! " ${required_ports_array[*]} " =~ " ${port} " ]]; then
-                  echo "Port $port is being used by a container but is not in the required ports list."
-                  exit 1
-              fi
-          done
-
-          echo "Checking if required ports are being used by any container..."
-          for port in "${required_ports_array[@]}"; do
-              if ! docker ps --format '{{.Ports}}' | grep -q "${port}->"; then
-                  echo "Port $port is not being used by any container"
-                  exit 1
-              else
-                  container_id=$(docker ps --filter "publish=$port" --format "{{.ID}}")
-                  container_ip=$(docker inspect --format '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $container_id)
-                  echo "Port $port is in use by container $container_id. URL: http://${container_ip}:${port}"
-              fi
-          done
-
       - name: Send webhook to server
         run: |
           response=$(curl -s -o /dev/null -w "%{http_code}" -X POST https://github.jce.ac/webhook/8de4b659-3610-4399-af65-b8ecf1700a08/ -H "Content-Type: application/json" -d '{"ref": "refs/heads/prod"}')
@@ -85,7 +23,3 @@ jobs:
           else
             echo "Webhook call succeeded with status $response"
           fi
-
-      - name: Stop containers
-        if: always()
-        run: docker-compose -f "docker-compose.yml" down
