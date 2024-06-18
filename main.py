@@ -25,6 +25,12 @@ async def recognize_clothes_and_colors(image_url: str = Form(...)):
     except Exception as e:
         logging.error(f"Error processing image: {e}")
         raise HTTPException(status_code=500, detail=f"Error processing image: {str(e)}")
+    
+
+@app.get("/")
+def sayHello():
+    print("hello world")
+
 
 if __name__ == "__main__":
     import uvicorn
