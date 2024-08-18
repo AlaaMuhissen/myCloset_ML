@@ -17,7 +17,10 @@ COPY requirements.txt .
 RUN pip install --upgrade pip
 
 # Install the Python dependencies 
+
 RUN pip install --no-cache-dir -r requirements.txt
+
+RUN pip install --no-cache-dir fastapi uvicorn onnx
 
 # Copy the rest of the application code into the container
 COPY . .

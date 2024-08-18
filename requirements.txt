@@ -8,3 +8,12 @@ numpy
 pandas
 colorthief
 cloudinary
+onnx
+onnxruntime
+requests
+python-dotenv
+webcolors
+pydantic
+json
+
+
