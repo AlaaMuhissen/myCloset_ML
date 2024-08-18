@@ -3,7 +3,15 @@ import json
 import random
 from colorsys import rgb_to_hls
 import re
+import os
+from dotenv import load_dotenv
 
+
+
+# Load environment variables
+load_dotenv()
+
+SUMMER_Outfit= os.getenv('SUMMER_FILE_CSV')
 # Helper functions
 def hex_to_rgb(hex_color):
     """Convert hex color to RGB tuple. Returns None if invalid."""
@@ -142,7 +150,7 @@ def get_top_outfits(outfits, cleaned_outfits):
 
 def final_outfits(json_data):
     # Load data and generate outfits
-    cleaned_outfits = pd.read_csv('C:\\Users\\Dream4Net\\Desktop\\images_outfits\\outfits_final_summer.csv')
+    cleaned_outfits = pd.read_csv(SUMMER_Outfit)
    
 
     # Generate 6 outfits using different color criteria
