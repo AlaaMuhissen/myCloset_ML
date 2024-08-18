@@ -3,15 +3,13 @@ import json
 import random
 from colorsys import rgb_to_hls
 import re
-import os
 from dotenv import load_dotenv
+import os
 
-
-
-# Load environment variables
 load_dotenv()
 
-SUMMER_Outfit= os.getenv('SUMMER_FILE_CSV')
+
+SUMMER_Outfit=os.getenv('SUMMER_FILE_CSV')
 # Helper functions
 def hex_to_rgb(hex_color):
     """Convert hex color to RGB tuple. Returns None if invalid."""
@@ -46,14 +44,16 @@ def is_soft_color(hex_code):
     return l > 0.7 and s < 0.3
 
 def get_color_combination(colors, soft_colors):
-    """Create a color combination based on whether soft colors are prioritized."""
+    if len(colors) < 2:
+        return colors
     if soft_colors:
         filtered_colors = [color for color in colors if is_soft_color(color)]
         if len(filtered_colors) < 2:
             return filtered_colors
         return random.sample(filtered_colors, 2)
     else:
-        return random.sample(colors, 2)
+        return random.sample(colors, min(2, len(colors)))
+
 
 def select_color_for_category(category, colors_list, ids_list, names_list, img_urls_list, categories_list, soft_colors=False):
     """Select a color for a category, prioritizing soft colors if specified."""
@@ -69,8 +69,10 @@ def select_color_for_category(category, colors_list, ids_list, names_list, img_u
 
 def generate_outfit(json_data, soft_colors=False):
     """Generate an outfit using specified color type (soft or light)."""
-    # Extract colors and imgUrl from JSON data
+   
     colors_list, ids_list, names_list, img_urls_list, categories_list = [], [], [], [], []
+    chosen_colors = set()  
+
     for category, subcategories in json_data.items():
         for subcategory, items in subcategories.items():
             for item in items:
@@ -93,6 +95,7 @@ def generate_outfit(json_data, soft_colors=False):
         color_info = select_color_for_category(category, colors_list, ids_list, names_list, img_urls_list, categories_list, soft_colors)
         if color_info:
             outfit[category] = color_info
+            chosen_colors.add(color_info[0])  # Add chosen color to set
 
     # Ensure no empty categories
     outfit = {cat: info for cat, info in outfit.items() if info[2]}
@@ -110,14 +113,15 @@ def generate_outfit(json_data, soft_colors=False):
             color_info = select_color_for_category(category, colors_list, ids_list, names_list, img_urls_list, categories_list, soft_colors)
             if color_info:
                 outfit[category] = color_info
-
+                chosen_colors.add(color_info[0]) 
     outfit = {cat: info for cat, info in outfit.items() if info[2]}
+    outfit["colorPalette"] = list(chosen_colors) 
 
     return outfit
 
 def calculate_score(outfit, cleaned_outfits):
     """Calculate the score of an outfit based on its similarity to outfits in cleaned_outfits."""
-    scores = [0] * len(cleaned_outfits)  # Fix initialization to match the number of cleaned_outfits
+    scores = [0] * len(cleaned_outfits)  
 
     for idx, row in cleaned_outfits.iterrows():
         score = 0
@@ -138,38 +142,37 @@ def calculate_score(outfit, cleaned_outfits):
         if row['Jewelry'] == outfit.get('Jewelry', ["", "", "", ""])[2]:
             score += 1
         
-        scores[idx] = score  # Store the score for the outfit at this index
+        scores[idx] = score 
 
     return scores
 
 def get_top_outfits(outfits, cleaned_outfits):
-    """Calculate scores for all outfits and return the top 3."""
+    
     scored_outfits = [(outfit, max(calculate_score(outfit, cleaned_outfits))) for outfit in outfits]
     top_outfits = sorted(scored_outfits, key=lambda x: x[1], reverse=True)[:3]
     return top_outfits
 
 def final_outfits(json_data):
-    # Load data and generate outfits
-    cleaned_outfits = pd.read_csv(SUMMER_Outfit)
+    cleaned_outfits= pd.read_csv(SUMMER_Outfit)
    
 
-    # Generate 6 outfits using different color criteria
+   
     outfits = []
     outfits.extend([generate_outfit(json_data, soft_colors=False) for _ in range(3)])  # Light color outfits
     outfits.extend([generate_outfit(json_data, soft_colors=True) for _ in range(3)])  # Soft color outfits
 
-    # Ensure that none of the outfits are None (invalid)
+  
     outfits = [outfit for outfit in outfits if outfit is not None]
 
-    # Get top 3 outfits based on the score
+  
     top_outfits = get_top_outfits(outfits, cleaned_outfits)
 
-    # Format top outfits as JSON
+  
     formatted_outfits = []
     for i, (outfit, score) in enumerate(top_outfits, start=1):
-        formatted_outfit = {"Outfit": i}
+        formatted_outfit = {"Outfit": i, "colorPalette": outfit.get("colorPalette", [])}
 
-        # Add categories only if they are not empty
+        
         for category in ["Tops", "Bottoms", "Shoes", "One_Piece", "Bags", "Outwear", "Head_wear", "Jewelry"]:
             item = outfit.get(category, ["", "", "", ""])
             if item[2]:
