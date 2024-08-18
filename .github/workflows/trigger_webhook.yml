@@ -7,7 +7,7 @@ on:
 
 jobs:
   push_to_prod:
-    timeout-minutes: 10
+    timeout-minutes: 100
     runs-on: ubuntu-latest
 
     steps:
