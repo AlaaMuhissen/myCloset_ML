@@ -62,7 +62,7 @@ The algorithm generates two outfit variations—one prioritizing bright colors a
    ```bash
    uvicorn main:app --reload
    ```
-
+   
 4. **Using Docker**
    To run the entire application in a Docker container:
    ```bash
@@ -75,12 +75,6 @@ The algorithm generates two outfit variations—one prioritizing bright colors a
 - **`POST /detect-colors/`**: Accepts an image input and returns the dominant colors of the clothing items.
 - **`POST /detect-fabric/`**: Accepts an image input and returns the detected fabric type.
 - **`POST /match-outfit/`**: Generates a recommended outfit based on input preferences, including temperature, occasion, and selected items.
-
-## 🔬 Testing
-Use the `tests/` directory to test model performance and API endpoints with sample data:
-   ```bash
-   python -m unittest discover -s tests
-   ```
 
 ## 🤝 Contributing
 Contributions are welcome! To contribute:
